@@ -65,9 +65,7 @@ public class RedisBasicTest {
         valueOperations.set(redisUserDto.getName(), String.valueOf(redisUserDto));
     
         final String result = valueOperations.get(redisUserDto.getName());
-
-        System.out.println("result = " + result);
-    
+        
     }
     
     /**
