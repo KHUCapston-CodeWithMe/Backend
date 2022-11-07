@@ -1,6 +1,9 @@
 package oncoding.concoder.config;
 
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,10 +19,13 @@ import org.springframework.data.redis.core.ValueOperations;
 public class RedisBasicTest {
     
     @Autowired
-    RedisTemplate<String, String> redisTemplate;
+    RedisTemplate<String, String> redisTemplate1;
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
     
  
-    public static class RedisUserDto{
+    
+    public static class RedisUserDto implements Serializable {
         private String name;
         private String password;
         
@@ -49,25 +55,12 @@ public class RedisBasicTest {
     void redisConnectionTest() {
         final String key = "a";
         final String data = "1";
-        
-        final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+
+        final ValueOperations<String, String> valueOperations = redisTemplate1.opsForValue();
         valueOperations.set(key, data);
-        
+
         final String s = valueOperations.get(key);
         Assertions.assertThat(s).isEqualTo(data);
-    }
-    
-    @Test
-    void redisInsertObject(){
-        RedisUserDto redisUserDto = new RedisUserDto("kenux", "password");
-        
-        final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(redisUserDto.getName(), String.valueOf(redisUserDto));
-    
-        final String result = valueOperations.get(redisUserDto.getName());
-
-        System.out.println("result = " + result);
-    
     }
     
     /**
@@ -79,7 +72,7 @@ public class RedisBasicTest {
         final String key = "a";
         final String data = "1";
         
-        final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        final ValueOperations<String, String> valueOperations = redisTemplate1.opsForValue();
         valueOperations.set(key, data);
         final Boolean expire = redisTemplate.expire(key, 5, TimeUnit.SECONDS);
         Thread.sleep(6000);
