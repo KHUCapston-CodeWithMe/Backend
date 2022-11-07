@@ -1,9 +1,7 @@
-package oncoding.concoder.service;
+package oncoding.concoder.config;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.concurrent.TimeUnit;
-import javax.persistence.Entity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +10,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.test.context.ActiveProfiles;
-
-/*
-@SpringBootTest
-@SpringBootApplication 애노테이션을 찾아가서 이 애노테이션부터 시작하는 모든 빈을 스캔하는 것이다.
-그리고 스캔한 모든 빈을 테스트용 애플리케이션에 다 등록해주는 것
- */
 
 @SpringBootTest
-//@ActiveProfiles("test")
-//@AutoConfigureTestDatabase(replace = Replace.AUTO_CONFIGURED) // 실제 DB 사용하고 싶을때 NONE 사용
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class RedisBasicTest {
     
@@ -95,8 +84,7 @@ public class RedisBasicTest {
         final Boolean expire = redisTemplate.expire(key, 5, TimeUnit.SECONDS);
         Thread.sleep(6000);
         final String s = valueOperations.get(key);
-//        assertThat(expire).isTrue();
-//        assertThat(s).isNull();
+
     }
     
 }
