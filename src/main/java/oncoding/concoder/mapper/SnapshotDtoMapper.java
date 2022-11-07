@@ -1,6 +1,7 @@
 package oncoding.concoder.mapper;
 
 import java.util.List;
+import java.util.Map;
 import oncoding.concoder.dto.SnapshotDto;
 import oncoding.concoder.dto.SnapshotDto.GetAll;
 import oncoding.concoder.model.Snapshot;
@@ -19,4 +20,5 @@ public abstract class SnapshotDtoMapper {
     public abstract SnapshotDto.GetAll toSnapshotDtoGetAll(Snapshot snapshot);
     
     public abstract List<GetAll> toSnapshotGetAllList(List<Snapshot> in);
+    public abstract Map<String,GetAll> toSnapshotGetAllMap(Map<String,Snapshot> in);
 }

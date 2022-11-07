@@ -1,12 +1,13 @@
 package oncoding.concoder.service;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import oncoding.concoder.model.Snapshot;
-import oncoding.concoder.repository.SnapshotRepository;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,14 +15,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SnapshotService {
     
-    private final SnapshotRepository repository;
+    private final RedisTemplate<String,Object> redisTemplate;
     
     /**
      * 목록 조회
      * @return 현재 snpshot 리스트
      */
-    public List<Snapshot> getSnapshots(){
-        return repository.findAll();
+    public Map<String,Snapshot> getSnapshots(){
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        return hashOperations.entries("Snapshot");
+        
     }
     
     /**
@@ -30,7 +33,9 @@ public class SnapshotService {
      * @return 현재 snpshot 리스트
      */
     public Snapshot getSnapshot(UUID id){
-        return repository.findById(id).orElse(null);
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        return (Snapshot) hashOperations.get("Snapshot",id.toString());
+      
     }
     
     /**
@@ -39,7 +44,16 @@ public class SnapshotService {
      * @return
      */
     public Snapshot createSnapshot(Snapshot snapshot){
-        return repository.save(snapshot);
+    
+        snapshot.setId(UUID.randomUUID());
+        snapshot.setCreatedDate(LocalDateTime.now());
+    
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        hashOperations.put("Snapshot",snapshot.getId().toString(),snapshot);
+        
+        Snapshot result = this.getSnapshot(snapshot.getId());
+        
+        return result;
     }
     
     /**
@@ -49,11 +63,14 @@ public class SnapshotService {
      * @return
      */
     public Snapshot modifySnapshot(UUID id, String memo){
+    
+        Snapshot shot = this.getSnapshot(id);
+        shot.setMemo(memo);
+        shot.setModifiedDate(LocalDateTime.now());
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        hashOperations.put("Snapshot",id.toString(),shot);
         
-        Snapshot existing = repository.findById(id).orElse(null);
-        existing.setMemo(memo);
-        
-        return repository.save(existing);
+        return shot;
         
     }
     
@@ -61,14 +78,10 @@ public class SnapshotService {
      * 스냅샷 단건 삭제
      */
     public void deleteSnapshot(UUID id){
-        repository.deleteById(id);
+    
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        hashOperations.delete("Snapshot",id.toString());
     }
     
-    /**
-     * 스냅샷 전체 삭제
-     */
-    public void deleteSnapshots(){
-        repository.deleteAll();
-    }
 
 }

@@ -1,10 +1,12 @@
 package oncoding.concoder.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,15 +22,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EntityListeners(AuditingEntityListener.class)
-public class Snapshot extends JpaBaseEntity {
+public class Snapshot implements Serializable {
     
-    @CreatedDate
+    private static final long serialVersionUID = 2148687123052233925L;
+    
+    @Id
+    private UUID id;
+    
     @Column(updatable=false, nullable = false)
     private LocalDateTime createdDate;
     
-    
-    @LastModifiedDate
     @Column(updatable=false, nullable = false)
     private LocalDateTime modifiedDate;
     
@@ -41,8 +44,20 @@ public class Snapshot extends JpaBaseEntity {
     private String content;
     
     
+    public void setId(UUID id){
+        this.id = id;
+    }
+    
     public void setMemo(String memo){
         this.memo = memo;
+    }
+    
+    public void setCreatedDate(LocalDateTime time){
+        this.createdDate = time;
+    }
+    
+    public void setModifiedDate(LocalDateTime time){
+        this.modifiedDate = time;
     }
     
 }
