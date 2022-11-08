@@ -5,22 +5,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Snapshot implements Serializable {
     
@@ -43,6 +37,15 @@ public class Snapshot implements Serializable {
     @NotNull
     private String content;
     
+    @Builder
+    public Snapshot(UUID id, LocalDateTime createdDate, LocalDateTime modifiedDate, String memo,
+        String content) {
+        this.id = id;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+        this.memo = memo;
+        this.content = content;
+    }
     
     public void setId(UUID id){
         this.id = id;

@@ -3,9 +3,7 @@ package oncoding.concoder.controller;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import oncoding.concoder.dto.SnapshotDto;
-import oncoding.concoder.dto.SnapshotDto.GetAll;
 import oncoding.concoder.mapper.SnapshotDtoMapper;
 import oncoding.concoder.service.SnapshotService;
 import org.springframework.http.MediaType;
@@ -30,10 +28,9 @@ public class SnapshotController {
      * 전체 조회
      * @return
      */
-    @SneakyThrows
     @GetMapping
-    public Map<String, GetAll> getSnapshots(){
-        return mapper.toSnapshotGetAllMap(service.getSnapshots());
+    public Map<String, SnapshotDto.AllResponse> getSnapshots(){
+        return mapper.toSnapshotAllMap(service.getSnapshots());
     }
 
     /**
@@ -41,10 +38,9 @@ public class SnapshotController {
      * @param
      * @return
      */
-    @SneakyThrows
     @GetMapping("/{snapshotId}")
-    public GetAll getSnapshot(@PathVariable UUID snapshotId){
-        return mapper.toSnapshotDtoGetAll(service.getSnapshot(snapshotId));
+    public SnapshotDto.AllResponse getSnapshot(@PathVariable UUID snapshotId){
+        return mapper.toSnapshotDtoAll(service.getSnapshot(snapshotId));
     }
 
     /**
@@ -52,10 +48,9 @@ public class SnapshotController {
      * @param in
      * @return
      */
-    @SneakyThrows
     @PostMapping
-    public GetAll createSnapshot(@RequestBody SnapshotDto.Add in){
-        return mapper.toSnapshotDtoGetAll(service.createSnapshot(mapper.toSnapshot(in)));
+    public SnapshotDto.AllResponse createSnapshot(@RequestBody SnapshotDto.CreateRequest in){
+        return mapper.toSnapshotDtoAll(service.createSnapshot(mapper.toSnapshot(in)));
     }
 
 
@@ -64,12 +59,11 @@ public class SnapshotController {
      * @param
      * @return
      */
-    @SneakyThrows
     @PutMapping
-    public GetAll modifySnapshot(@RequestBody SnapshotDto.Modify in){
+    public SnapshotDto.AllResponse modifySnapshot(@RequestBody SnapshotDto.ModifyRequest in){
         UUID id = in.getId();
         String memo = in.getMemo();
-        return mapper.toSnapshotDtoGetAll(service.modifySnapshot(id, memo));
+        return mapper.toSnapshotDtoAll(service.modifySnapshot(id, memo));
     }
 
 
@@ -78,7 +72,6 @@ public class SnapshotController {
      * @param
      * @return
      */
-    @SneakyThrows
     @DeleteMapping("/{snapshotId}")
     public void deleteSnapshot(@PathVariable UUID snapshotId){
         service.deleteSnapshot(snapshotId);

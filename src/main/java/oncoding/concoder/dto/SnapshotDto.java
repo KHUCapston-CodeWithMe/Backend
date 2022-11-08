@@ -15,7 +15,7 @@ public class SnapshotDto {
     @Builder
     @ToString
     @AllArgsConstructor
-    public static class GetAll{
+    public static class AllResponse{
         
         private UUID id;
     
@@ -35,7 +35,7 @@ public class SnapshotDto {
     @Builder
     @ToString
     @AllArgsConstructor
-    public static class Add{
+    public static class CreateRequest{
     
         private String memo;
     
@@ -48,7 +48,7 @@ public class SnapshotDto {
     @Builder
     @ToString
     @AllArgsConstructor
-    public static class Modify{
+    public static class ModifyRequest{
     
         private UUID id;
         

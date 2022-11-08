@@ -3,7 +3,6 @@ package oncoding.concoder.mapper;
 import java.util.List;
 import java.util.Map;
 import oncoding.concoder.dto.SnapshotDto;
-import oncoding.concoder.dto.SnapshotDto.GetAll;
 import oncoding.concoder.model.Snapshot;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
@@ -15,10 +14,10 @@ import org.mapstruct.Mapper;
 )
 public abstract class SnapshotDtoMapper {
 
-    public abstract Snapshot toSnapshot(SnapshotDto.Add in);
-    public abstract Snapshot toSnapshot(SnapshotDto.Modify in);
-    public abstract SnapshotDto.GetAll toSnapshotDtoGetAll(Snapshot snapshot);
+    public abstract Snapshot toSnapshot(SnapshotDto.CreateRequest in);
+    public abstract Snapshot toSnapshot(SnapshotDto.ModifyRequest in);
+    public abstract SnapshotDto.AllResponse toSnapshotDtoAll(Snapshot snapshot);
     
-    public abstract List<GetAll> toSnapshotGetAllList(List<Snapshot> in);
-    public abstract Map<String,GetAll> toSnapshotGetAllMap(Map<String,Snapshot> in);
+    public abstract List<SnapshotDto.AllResponse> toSnapshotAllList(List<Snapshot> in);
+    public abstract Map<String,SnapshotDto.AllResponse> toSnapshotAllMap(Map<String,Snapshot> in);
 }
