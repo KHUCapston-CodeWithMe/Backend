@@ -16,12 +16,12 @@ public class RedisConfig {
     
     @Value("${spring.redis.port}")
     private int port;
-    
-    @Bean //redisConnectionFactory 이름의 빈(역할)은 LettuceConnectionFactory(host, port)를 구현체로 선택한 것
+
+    @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(host, port);
     }
-    
+
     @Bean
     public RedisTemplate<String,Object> redisTemplate(){
         RedisTemplate<String,Object> redisTemplate = new RedisTemplate<>();
@@ -30,7 +30,7 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         return redisTemplate;
     }
-    
+
     @Bean
     public StringRedisTemplate stringRedisTemplate(){
         final StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
@@ -39,5 +39,4 @@ public class RedisConfig {
         stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
         return stringRedisTemplate;
     }
-    
 }

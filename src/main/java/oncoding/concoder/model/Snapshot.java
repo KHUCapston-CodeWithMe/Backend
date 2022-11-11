@@ -12,7 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +27,7 @@ public class Snapshot implements Serializable {
     
     @Column(updatable=false, nullable = false)
     private LocalDateTime modifiedDate;
-    
+
     @Column
     @NotNull
     private String memo;
@@ -36,7 +35,7 @@ public class Snapshot implements Serializable {
     @Column
     @NotNull
     private String content;
-    
+
     @Builder
     public Snapshot(UUID id, LocalDateTime createdDate, LocalDateTime modifiedDate, String memo,
         String content) {
@@ -62,5 +61,4 @@ public class Snapshot implements Serializable {
     public void setModifiedDate(LocalDateTime time){
         this.modifiedDate = time;
     }
-    
 }
