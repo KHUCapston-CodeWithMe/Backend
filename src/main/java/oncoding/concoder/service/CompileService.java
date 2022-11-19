@@ -1,5 +1,6 @@
 package oncoding.concoder.service;
 
+import io.lettuce.core.protocol.AsyncCommand;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,8 +10,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.UUID;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class CompileService {
 
@@ -35,7 +42,7 @@ public class CompileService {
         System.out.println("Error : file "+ Paths.get(String.format("file %s.py", name)).toString() +" not deleted!");
     }
 
-    public String getOutput(BufferedReader bufferedReader, boolean success) throws IOException {
+    public String getOutput(BufferedReader bufferedReader, int exitCode, long time) throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
         while ((line = bufferedReader.readLine()) != null) {
@@ -43,30 +50,32 @@ public class CompileService {
             sb.append("\n");
         }
 
-        if (!success) {
-            System.out.println("비정상 종료");
+        if (exitCode!=0) {
+            log.info("run failed with exit code " + exitCode + " time : " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS));
         }
         else {
-            System.out.println("정상 종료");
+            log.info("run success with exit code "+ exitCode + " time: " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS));
         }
         return sb.toString();
     }
 
-    public String run(String code) throws IOException, InterruptedException {
+    @Async("taskExecutor")
+    public void run(String code) throws IOException, InterruptedException {
+        log.info("CompileService.run()...");
         String random = UUID.randomUUID().toString();
         try {
             writeFile(random, code);
 
             ProcessBuilder processBuilder = new ProcessBuilder("python3",
                 Paths.get(String.format("%s.py", random)).toString());
+            long startTime = System.nanoTime();
             Process process = processBuilder.start();
-            ProcessHandle.Info processInfo = process.info();
             int exitCode = process.waitFor();
-
+            long time = System.nanoTime()-startTime;
             BufferedReader br;
             br = exitCode!=0 ? new BufferedReader(new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8))
                 : new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
-            return getOutput(br, exitCode==0);
+            getOutput(br, exitCode, time); // TODO : 워크스페이스 Id 받아서 socket spread
         }
         finally {
             deleteFile(random);

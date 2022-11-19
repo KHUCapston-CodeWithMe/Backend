@@ -18,7 +18,9 @@ public class CompileController {
     @PostMapping("")
     public String test(@RequestBody String code) {
         try {
-            return compileService.run(code);
+            for (int i = 0; i<10; i++) // TODO : 테스트 케이스 받아서 테스트 케이스마다 실행
+                compileService.run(code);
+            return "ok";
         }
         catch (Exception e) {
             e.printStackTrace();
