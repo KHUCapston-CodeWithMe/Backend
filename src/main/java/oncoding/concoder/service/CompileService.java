@@ -50,17 +50,15 @@ public class CompileService {
     public String getOutput(BufferedReader bufferedReader, int exitCode, long time) throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
+        boolean first = true;
         while ((line = bufferedReader.readLine()) != null) {
+            if (first) first = false;
+            else sb.append("\n");
             sb.append(line);
-            sb.append("\n");
         }
 
-        if (exitCode!=0) {
-            log.info("run failed with exit code " + exitCode + " time : " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS));
-        }
-        else {
-            log.info("run success with exit code "+ exitCode + " time: " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS));
-        }
+        String result = exitCode!=0 ? "failed" : "success";
+        log.info("run " + result + " with exit code " + exitCode + " time: " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)+"ms");
         return sb.toString();
     }
 
