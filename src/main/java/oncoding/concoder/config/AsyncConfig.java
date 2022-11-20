@@ -15,7 +15,6 @@ public class AsyncConfig {
         taskExecutor.setCorePoolSize(5);
         taskExecutor.setMaxPoolSize(10);
         taskExecutor.setQueueCapacity(50);
-        taskExecutor.setAwaitTerminationSeconds(30);
         taskExecutor.setThreadNamePrefix("compile");
         taskExecutor.initialize();
         return taskExecutor;
