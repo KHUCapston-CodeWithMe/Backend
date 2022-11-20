@@ -56,13 +56,14 @@ public class CompileService {
             else sb.append("\n");
             sb.append(line);
         }
+        bufferedReader.close();
 
         String result = exitCode!=0 ? "failed" : "success";
         log.info("run " + result + " with exit code " + exitCode + " time: " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)+"ms");
         return sb.toString();
     }
 
-    public void setTimeoutTimer (Thread thread) {
+    public Timer setTimeoutTimer (Thread thread) {
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -72,6 +73,7 @@ public class CompileService {
             }
         };
         timer.schedule(timerTask, THREAD_TIMEOUT_SECONDS*1000);
+        return timer;
     }
 
     @Async("taskExecutor")
@@ -81,9 +83,9 @@ public class CompileService {
 
         try {
             // set timer to timeout
-           setTimeoutTimer(Thread.currentThread());
+           Timer timer = setTimeoutTimer(Thread.currentThread());
 
-            // start process
+            // process start
             writeFile(random, code);
             ProcessBuilder processBuilder = new ProcessBuilder("python3",
                 Paths.get(String.format("%s.py", random)).toString());
@@ -94,9 +96,13 @@ public class CompileService {
             OutputStream stdin = process.getOutputStream();
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(stdin));
             bw.write(input);
+            bw.close();
 
+            // process end
             int exitCode = process.waitFor();
             long time = System.nanoTime()-startTime;
+            timer.cancel();
+
             // read output
             InputStream stdout = exitCode!=0 ? process.getErrorStream() : process.getInputStream();
             BufferedReader br =  new BufferedReader(new InputStreamReader(stdout, StandardCharsets.UTF_8));
@@ -105,6 +111,5 @@ public class CompileService {
         finally {
             deleteFile(random);
         }
-
     }
 }

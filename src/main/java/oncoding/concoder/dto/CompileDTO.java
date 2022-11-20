@@ -1,5 +1,6 @@
 package oncoding.concoder.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ public class CompileDTO {
     @AllArgsConstructor
     public static class CreateRequest {
         private String code;
-        private String input;
+        private List<String> inputs;
     }
 
 }

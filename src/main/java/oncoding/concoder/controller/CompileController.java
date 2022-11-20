@@ -17,8 +17,9 @@ public class CompileController {
     @PostMapping("")
     public String test(@RequestBody CompileDTO.CreateRequest req) {
         try {
-            for (int i = 0; i<10; i++) // TODO : 테스트 케이스 받아서 테스트 케이스마다 실행
-                compileService.run(req.getCode(), req.getInput());
+            for (int i = 0; i<req.getInputs().size(); i++) {
+                compileService.run(req.getCode(), req.getInputs().get(i));
+            }
             return "ok";
         }
         catch (Exception e) {
