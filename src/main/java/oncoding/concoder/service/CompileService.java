@@ -31,7 +31,7 @@ public class CompileService {
 
         FileWriter fw = new FileWriter(file);
         try (BufferedWriter writer = new BufferedWriter(fw)) {
-            writer.write(content);
+            writer.write(content.substring(1, content.length()-1));
         }
     }
 

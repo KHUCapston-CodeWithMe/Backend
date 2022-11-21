@@ -15,12 +15,9 @@ public class CompileController {
     private final CompileService compileService;
 
     @PostMapping("")
-    public String test(@RequestBody CompileDTO.CreateRequest req) {
+    public String test(@RequestBody String code) {
         try {
-            for (int i = 0; i<req.getInputs().size(); i++) {
-                compileService.run(req.getCode(), req.getInputs().get(i));
-            }
-            return "ok";
+            return compileService.run(code,"").get();
         }
         catch (Exception e) {
             e.printStackTrace();
