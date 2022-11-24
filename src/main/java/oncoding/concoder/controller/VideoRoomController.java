@@ -1,11 +1,13 @@
 package oncoding.concoder.controller;
 
+import java.net.http.WebSocket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import oncoding.concoder.config.WebSocketConfig;
 import oncoding.concoder.dto.ChatDTO.DummyResponse;
 import oncoding.concoder.dto.ChatDTO.ExitResponse;
 import oncoding.concoder.dto.ChatDTO.SessionRequest;
