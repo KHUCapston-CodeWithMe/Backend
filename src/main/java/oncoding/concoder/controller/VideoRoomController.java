@@ -104,7 +104,6 @@ public class VideoRoomController {
   }
 
 
-
   @EventListener
   public void handleSessionDisconnect(final SessionDisconnectEvent event) {
     // 그냥 disconnect 결과로 프론트한테 removedID 쏴주면 아래처럼 나간 유저 정보 삭제 시키는 걸로 다시 요청 달라고 하기
@@ -120,7 +119,7 @@ public class VideoRoomController {
     //현재 세션 목록에서 연결 끊은 유저 제외시킴
     for (UserResponse userResponse : users) {
       if (userResponse.getSessionId().equals(sessionId)) {
-        removedId = userResponse.getSessionId();
+        removedID = userResponse.getSessionId();
         users.remove(userResponse);
         break;
       }
