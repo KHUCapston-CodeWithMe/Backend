@@ -1,5 +1,6 @@
 package oncoding.concoder.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -12,6 +13,7 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Configuration
+@Slf4j
 @EnableWebSocketMessageBroker //웹 소켓 메시지 처리 활성화
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer { //WebSocketConfigurer
 
@@ -39,8 +41,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer { //Web
   @EventListener
   public void onDisconnectEvent(final SessionDisconnectEvent event) {
     System.out.println("DisconnectEvent");
+    log.info("SessionDisconnectEvent sessionId : "+event.getSessionId());
   }
 
+
+  //SessoionConnectEvent 일 때 sessionId 값 받아오는지 확인하고 있으면 프론트
 
 
 
