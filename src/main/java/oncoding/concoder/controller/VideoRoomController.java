@@ -37,7 +37,9 @@ public class VideoRoomController {
   // 테스트용 세션 리스트.
 
   private final ChattingService chattingService;
-  private final SimpMessagingTemplate template;
+  //private final SimpMessagingTemplate template;
+  private final SimpMessageSendingOperations template;
+
 
   private SessionResponse sessionResponse;
 
