@@ -75,6 +75,7 @@ public class ChattingService {
     log.info("entered user: "+session.getUser().getId());
     log.info("entered room: "+session.getRoom().getId());
 
+
     return SessionResponse.from(room.users()); //sessionResponse 생성 - room의 users를 가지고 있음
   }
 
