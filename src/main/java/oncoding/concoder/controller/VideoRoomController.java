@@ -118,7 +118,7 @@ public class VideoRoomController {
    // template.convertAndSend("/sub/video/close-session", removedId);
     //log.info("convertAndSend to /sub/video/close-session",removedId);
 
-    template.convertAndSend("/sub/video/unjoined-room-info",removedId);
+    template.convertAndSend("/sub/video/unjoined-room-info",response);
 
     log.info("convertAndSend to /sub/video/unjoined-room-info"+ removedId);
 
