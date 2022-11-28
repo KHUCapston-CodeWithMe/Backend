@@ -1,13 +1,16 @@
 package oncoding.concoder.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import oncoding.concoder.dto.ChatDTO.DummyResponse;
+import oncoding.concoder.dto.ChatDTO.ExitResponse;
 import oncoding.concoder.dto.ChatDTO.SessionRequest;
 import oncoding.concoder.dto.ChatDTO.SessionResponse;
+import oncoding.concoder.dto.ChatDTO.UserResponse;
 import oncoding.concoder.service.ChattingService;
 import org.json.simple.JSONObject;
 import org.springframework.context.event.EventListener;
@@ -34,7 +37,7 @@ public class VideoRoomController {
   private final ChattingService chattingService;
   private final SimpMessagingTemplate template;
 
-  //private SessionResponse sessionResponse;
+  private SessionResponse sessionResponse;
 
 
 
