@@ -162,5 +162,17 @@ public class VideoRoomController {
     chattingService.clear();
   }
 
+  @GetMapping("/dummy")
+  public ResponseEntity<DummyResponse> getDummyRoomAndUser() {
+    DummyResponse response = chattingService.getDummy();
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/dummy")
+  public ResponseEntity<DummyResponse> createDummyRoomAndUser() {
+    DummyResponse response = chattingService.createDummy();
+    return ResponseEntity.ok(response);
+  }
+
 
 }
