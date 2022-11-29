@@ -150,7 +150,6 @@ public class ChattingService {
     sessionRepository.deleteAll();
     userRepository.deleteAll();
     roomRepository.deleteAll();
-    sessionRepository.deleteAll();
   }
 
 }
