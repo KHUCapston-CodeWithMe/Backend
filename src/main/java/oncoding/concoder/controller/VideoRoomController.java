@@ -87,6 +87,9 @@ public class VideoRoomController {
     //채팅방에서도 나감
     ExitResponse response = chattingService.exit(sessionId);
 
+    //template.convertAndSend("/sub/rooms/" + response.getRoomId(), response.getSessionResponse());
+    //log.info("convertAndSend to /sub/rooms/getRoomid",response.getSessionResponse());
+
     template.convertAndSend("/sub/video/unjoined-room-info/"+roomId,response);
 
     log.info("convertAndSend to /sub/video/unjoined-room-info"+ removedId);
