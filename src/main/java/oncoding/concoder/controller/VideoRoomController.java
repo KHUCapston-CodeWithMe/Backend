@@ -171,11 +171,8 @@ public class VideoRoomController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/dummy")
-  public ResponseEntity<DummyResponse> createDummyRoomAndUser() {
-    DummyResponse response = chattingService.createDummy();
-    return ResponseEntity.ok(response);
-  }
+
+
 
 
 }
