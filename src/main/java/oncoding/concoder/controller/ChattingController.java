@@ -38,6 +38,7 @@ public class ChattingController {
     log.info("/rooms/chat/"+roomId+" content: "+request.getContent());
     template.convertAndSend("/sub/rooms/chat/"+ roomId , chatService.sendMessage(request));
     log.info("after chatting convert and send");
+    template.convertAndSend("/sub/rooms/chat/"+ roomId , chatService.sendMessage(request));
   }
 
 
