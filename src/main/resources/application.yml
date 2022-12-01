@@ -1,4 +1,8 @@
-spring:
+server:
+  servlet:
+    context-path: /api
+
+Spring:
   redis:
     host: localhost
     port: 6379
