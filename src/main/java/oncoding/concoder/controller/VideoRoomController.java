@@ -44,6 +44,7 @@ public class VideoRoomController {
   private Map<UUID, Object> usersAtRooms;
 
 
+
   @MessageMapping("/video/chat/{roomId}")
   public void chat(@DestinationVariable final String roomId, JSONObject ob) {
     log.info("/rooms/chat/"+roomId+" userId:  "+ob.get("userId"));
