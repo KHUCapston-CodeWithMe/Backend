@@ -52,7 +52,7 @@ public class CompileService {
         System.out.println("Error : file "+ Paths.get(String.format("file %s.py", name)).toString() +" not deleted!");
     }
 
-    public CompileDto.Response getOutput(BufferedReader bufferedReader, int exitCode, long time, int idx) throws IOException {
+    public CompileDto.Response getOutput(BufferedReader bufferedReader, int exitCode, long time, String testCaseId) throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
         boolean first = true;
@@ -66,7 +66,7 @@ public class CompileService {
         String result = exitCode!=0 ? "failed" : "success";
         log.info("run " + result + " with exit code " + exitCode + " time: " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)+"ms");
 
-        return new CompileDto.Response(idx, sb.toString(),  TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS));
+        return new CompileDto.Response(testCaseId, sb.toString(),  TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS));
     }
 
     public Timer setTimeoutTimer (Thread thread) {
@@ -83,7 +83,7 @@ public class CompileService {
     }
 
     @Async("taskExecutor")
-    public void run(String roomId, String code, String input, Integer index) throws IOException, InterruptedException {
+    public void run(String roomId, String code, String input, String testCaseId) throws IOException, InterruptedException {
         log.info(Thread.currentThread().getName()+" thread run()...");
         String random = UUID.randomUUID().toString();
 
@@ -113,7 +113,12 @@ public class CompileService {
             InputStream stdout = exitCode!=0 ? process.getErrorStream() : process.getInputStream();
             BufferedReader br =  new BufferedReader(new InputStreamReader(stdout, StandardCharsets.UTF_8));
 
-            template.convertAndSend("/sub/compile/"+ roomId, getOutput(br, exitCode, time, index));
+            template.convertAndSend("/sub/compile/"+ roomId,
+                getOutput(br, exitCode, time, testCaseId));
+        }
+        catch (InterruptedException e) {
+            template.convertAndSend("/sub/compile/"+ roomId,
+                new CompileDto.Response(testCaseId, "[Error] timeout!", -1L));
         }
         finally {
             deleteFile(random);

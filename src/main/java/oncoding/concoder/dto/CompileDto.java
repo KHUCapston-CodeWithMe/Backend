@@ -21,6 +21,7 @@ public class CompileDto {
     @ToString
     @AllArgsConstructor
     public static class Testcase {
+        private String id;
         private String output;
         private String input;
     }
@@ -30,7 +31,7 @@ public class CompileDto {
     @ToString
     @AllArgsConstructor
     public static class Response {
-        private Integer idx;
+        private String id;
         private String output;
         private Long time;
     }

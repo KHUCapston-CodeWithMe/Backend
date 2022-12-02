@@ -3,7 +3,10 @@ package oncoding.concoder.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import jdk.incubator.vector.VectorOperators.Test;
 import lombok.RequiredArgsConstructor;
@@ -33,21 +36,20 @@ public class CompileController {
     public void compileByTestcases(@DestinationVariable final String roomId, JSONObject obj) {
         String code = (String) obj.get("code");
         // Redis 로부터 roomId 로 가져오기
-        List<CompileDto.Testcase> testcases = new ArrayList<>();
-        for (int idx = 0; idx<testcases.size(); idx++){
-            CompileDto.Testcase testcase = testcases.get(idx);
+        Map<String, JSONObject> testCases = new HashMap<>();
+        for (Entry<String, JSONObject> testCase : testCases.entrySet()){
+            String testCaseId = testCase.getKey();
+            String input = (String) testCase.getValue().get("input");
             try {
-                compileService.run(roomId, code, testcase.getInput(), idx);
+                compileService.run(roomId, code, input, testCaseId);
             }
             catch (InterruptedException e) {
-                log.info("Testcase "+idx+" timeout!");
-                template.convertAndSend("/sub/compile/"+ roomId,
-                    new CompileDto.Response(idx, "[Error] timeout!", -1L));
+                log.info("Testcase "+testCaseId+" timeout!");
             }
             catch (IOException e) {
-                log.info("Testcase "+idx+" error! "+ Arrays.toString(e.getStackTrace()));
+                log.info("Testcase "+testCaseId+" error! "+ Arrays.toString(e.getStackTrace()));
                 template.convertAndSend("/sub/compile/"+ roomId,
-                    new CompileDto.Response(idx, "[Error] "+e.getMessage(), -1L));
+                    new CompileDto.Response(testCaseId, "[Error] "+e.getMessage(), -1L));
             }
         }
 
