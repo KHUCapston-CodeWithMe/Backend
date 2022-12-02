@@ -20,7 +20,17 @@ public class CompileDto {
     @Setter
     @ToString
     @AllArgsConstructor
+    public static class Testcase {
+        private String output;
+        private String input;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    @AllArgsConstructor
     public static class Response {
+        private Integer idx;
         private String output;
         private Long time;
     }
