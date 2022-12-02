@@ -2,6 +2,7 @@ package oncoding.concoder.service;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 import io.restassured.internal.util.SafeExceptionRethrower;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -49,7 +49,6 @@ public class TestCaseServiceTest {
     ob.put("output","output");
 
     JSONObject result = (JSONObject) service.createTestCase(this.roomId,ob);
-    System.out.println(result.toString());
 
     //key확인
     Set<String> redisKeys = redisTemplate.keys(this.roomId);
@@ -75,8 +74,6 @@ public class TestCaseServiceTest {
 
     Map<String,JSONObject> map = service.getTestCases(this.roomId);
 
-    System.out.println(map.toString());
-
 
     Collection<JSONObject> list = map.values();
     List<JSONObject> list2 = new ArrayList<>(list);
@@ -101,9 +98,11 @@ public class TestCaseServiceTest {
 
     Iterator<String> iter = s.iterator();
     while (iter.hasNext()) {
+
       System.out.println("here");
       String data = iter.next();
       System.out.println(service.getTestCase(this.roomId,data));
+      String data = iter.next();
       assertTrue(map.get(data).get("input").equals("input"));
     }
 
@@ -117,6 +116,7 @@ public class TestCaseServiceTest {
     ob.put("output","output");
 
     JSONObject result = (JSONObject) service.createTestCase(this.roomId,ob);
+
     Map<String,JSONObject> map = service.getTestCases(this.roomId);
 
     Set s = map.keySet();
