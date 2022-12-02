@@ -15,13 +15,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import javax.persistence.criteria.CriteriaBuilder.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import oncoding.concoder.dto.CompileDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -29,6 +27,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CompileService {
     public static final int THREAD_TIMEOUT_SECONDS = 5;
+
     private final SimpMessagingTemplate template;
 
     public void writeFile(String name, String content) throws IOException {
@@ -83,7 +82,7 @@ public class CompileService {
     }
 
     @Async("taskExecutor")
-    public void run(String roomId, String code, String input, String testCaseId) throws IOException, InterruptedException {
+    public void run(String roomId, String code, String input, String testCaseId) {
         log.info(Thread.currentThread().getName()+" thread run()...");
         String random = UUID.randomUUID().toString();
 
@@ -119,6 +118,10 @@ public class CompileService {
         catch (InterruptedException e) {
             template.convertAndSend("/sub/compile/"+ roomId,
                 new CompileDto.Response(testCaseId, "[Error] timeout!", -1L));
+        }
+        catch (IOException e) {
+            template.convertAndSend("/sub/compile/"+ roomId,
+                new CompileDto.Response(testCaseId, "[Error] "+e.getMessage(), -1L));
         }
         finally {
             deleteFile(random);
