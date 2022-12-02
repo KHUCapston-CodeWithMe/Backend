@@ -20,18 +20,8 @@ public class CompileDto {
     @Setter
     @ToString
     @AllArgsConstructor
-    public static class Testcase {
-        private String id;
-        private String output;
-        private String input;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    @AllArgsConstructor
     public static class Response {
-        private String id;
+        private String testCaseId;
         private String output;
         private Long time;
     }
