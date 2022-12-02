@@ -1,7 +1,11 @@
 package oncoding.concoder.service;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +27,14 @@ public class TestCaseService {
    * @param roomId
    * @return
    */
-  public List<Object> getTestCases(String roomId){
+  public Map<String,JSONObject> getTestCases(String roomId){
 
     //roomId는 first key값, testcaseId는 secondkey값 (내부의 key값)
 
-    HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
+    HashOperations<String, String, JSONObject> hashOperations = redisTemplate.opsForHash();
 
-    hashOperations.entries(roomId);
 
-    List<Object> list = (List<Object>) hashOperations.entries(roomId);
-
-    return list;
+    return hashOperations.entries(roomId);
   }
 
 
@@ -43,11 +44,11 @@ public class TestCaseService {
    * @param testCaseId
    * @return
    */
-  public Object getTestCase(String roomId,String testCaseId){
+  public JSONObject getTestCase(String roomId,String testCaseId){
 
-    HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
+    HashOperations<String, String, JSONObject> hashOperations = redisTemplate.opsForHash();
 
-    Object testcase = hashOperations.get(roomId,testCaseId);
+    JSONObject testcase = hashOperations.get(roomId,testCaseId);
 
     return testcase;
 
@@ -60,14 +61,14 @@ public class TestCaseService {
    * @param ob
    * @return
    */
-  public Object createTestCase(String roomId,JSONObject ob){
-    HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
+  public JSONObject createTestCase(String roomId,JSONObject ob){
+    HashOperations<String, String, JSONObject> hashOperations = redisTemplate.opsForHash();
 
     UUID testCaseId = UUID.randomUUID();
 
     hashOperations.put(roomId,testCaseId.toString(),ob);
 
-    Object created = this.getTestCase(roomId,testCaseId.toString());
+    JSONObject created = this.getTestCase(roomId,testCaseId.toString());
 
     return created;
   }
@@ -79,8 +80,8 @@ public class TestCaseService {
    * @param ob
    * @return
    */
-  public Object modifyTestCase(String roomId,String testCaseId,JSONObject ob){
-    HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
+  public JSONObject modifyTestCase(String roomId,String testCaseId,JSONObject ob){
+    HashOperations<String, String, JSONObject> hashOperations = redisTemplate.opsForHash();
     hashOperations.put(roomId,testCaseId,ob);
 
     return this.getTestCase(roomId,testCaseId.toString());
@@ -93,8 +94,12 @@ public class TestCaseService {
    * @param testCaseId
    */
   public void deleteTestCase(String roomId, String testCaseId){
-    HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
+    HashOperations<String, String, JSONObject> hashOperations = redisTemplate.opsForHash();
     hashOperations.delete(roomId,testCaseId);
   }
+
+
+
+
   
 }
