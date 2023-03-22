@@ -28,7 +28,7 @@ public class CompileService {
         if (lang.equals(Language.PYTHON)) {
             runner = new PythonRunner(random);
         } else if (lang.equals(Language.CPP)) {
-
+            runner = new CppRunner(random);
         }
 
         try {

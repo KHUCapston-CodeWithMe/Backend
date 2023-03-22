@@ -30,9 +30,10 @@ public class CompileController {
         // TODO: lang null 처리
         Language lang;
         if (_lang == null) {
-            lang = Language.valueOf("python");
+            lang = Language.PYTHON;
         } else {
-            lang = Language.valueOf(_lang.toString());
+            lang = Language.CPP;
+            // TODO: 개선
         }
 
         // Redis 로부터 roomId 로 가져오기

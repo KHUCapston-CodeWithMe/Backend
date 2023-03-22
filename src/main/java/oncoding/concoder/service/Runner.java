@@ -3,8 +3,8 @@ package oncoding.concoder.service;
 import lombok.extern.slf4j.Slf4j;
 import oncoding.concoder.dto.CompileDto;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +13,12 @@ import java.util.concurrent.TimeUnit;
 public abstract class Runner {
 
     public static final int THREAD_TIMEOUT_SECONDS = 5;
+
+    protected final String random;
+
+    protected Runner(String random) {
+        this.random = random;
+    }
 
     public Timer setTimeoutTimer (Thread thread) {
         Timer timer = new Timer();
@@ -27,7 +33,7 @@ public abstract class Runner {
         return timer;
     }
 
-    CompileDto.Response getOutput(BufferedReader bufferedReader, int exitCode, long time, String testCaseId) throws IOException {
+    protected CompileDto.Response getOutput(BufferedReader bufferedReader, int exitCode, long time, String testCaseId) throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
         boolean first = true;
@@ -35,6 +41,7 @@ public abstract class Runner {
             if (first) first = false;
             else sb.append("\n");
             sb.append(line);
+            log.info(line);
         }
         bufferedReader.close();
 
@@ -42,6 +49,39 @@ public abstract class Runner {
         log.info("run " + result + " with exit code " + exitCode + " time: " + TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS)+"ms");
 
         return new CompileDto.Response(testCaseId, sb.toString(),  TimeUnit.MILLISECONDS.convert(time, TimeUnit.NANOSECONDS));
+    }
+
+    protected void writeContent(String content, File file) throws IOException {
+        FileWriter fw = new FileWriter(file);
+        try (BufferedWriter writer = new BufferedWriter(fw)) {
+            writer.write(content);
+        }
+    }
+
+    protected CompileDto.Response inputAndOutput(String input, String testCaseId, ProcessBuilder processBuilder)
+            throws IOException, InterruptedException {
+        // set timer to timeout
+        Timer timer = setTimeoutTimer(Thread.currentThread());
+        long startTime = System.nanoTime();
+
+        Process runProcess = processBuilder.start();
+
+        // write input
+        OutputStream stdin = runProcess.getOutputStream();
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(stdin));
+        bw.write(input);
+        bw.close();
+
+        // process end
+        int exitCode = runProcess.waitFor();
+        long time = System.nanoTime()-startTime;
+        timer.cancel();
+
+        // read output
+        InputStream stdout = exitCode!=0 ? runProcess.getErrorStream() : runProcess.getInputStream();
+        BufferedReader br =  new BufferedReader(new InputStreamReader(stdout, StandardCharsets.UTF_8));
+
+        return getOutput(br, exitCode, time, testCaseId);
     }
 
     abstract void writeFile(String name, String content) throws IOException;
@@ -52,5 +92,6 @@ public abstract class Runner {
     */
     abstract void deleteFile(String name);
 
-    abstract CompileDto.Response run(String roomId, String code, String input, String testCaseId) throws IOException, InterruptedException;
+    abstract CompileDto.Response run(String roomId, String code, String input, String testCaseId)
+            throws IOException, InterruptedException;
 }
