@@ -1,6 +1,5 @@
 package oncoding.concoder.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -8,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import oncoding.concoder.dto.ChatDTO.DummyResponse;
 import oncoding.concoder.dto.ChatDTO.ExitResponse;
-import oncoding.concoder.dto.ChatDTO.MessageRequest;
 import oncoding.concoder.dto.ChatDTO.SessionRequest;
 import oncoding.concoder.dto.ChatDTO.SessionResponse;
 import oncoding.concoder.dto.ChatDTO.UserResponse;
@@ -49,8 +47,9 @@ public class VideoRoomController {
   public void chat(@DestinationVariable final String roomId, JSONObject ob) {
     log.info("/rooms/chat/"+roomId+" userId:  "+ob.get("userId"));
     log.info("/rooms/chat/"+roomId+" content: "+ob.get("content"));
-    MessageRequest request = new MessageRequest(UUID.fromString((String) ob.get("userId")), (String)ob.get("content"));
-    template.convertAndSend("/sub/video/chat/"+ roomId , chattingService.sendMessage(request));
+
+    chattingService.sendMessage(roomId, ob);
+
     log.info("after chatting convert and send");
   }
 

@@ -18,6 +18,8 @@ import oncoding.concoder.model.User;
 import oncoding.concoder.repository.RoomRepository;
 import oncoding.concoder.repository.SessionRepository;
 import oncoding.concoder.repository.UserRepository;
+import org.json.simple.JSONObject;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,15 +34,26 @@ public class ChattingService {
   private final RoomRepository roomRepository;
   private final SessionRepository sessionRepository;
 
+  private final SimpMessagingTemplate messagingTemplate;
 
   /**
    * 
    * @param request
    * @return request 내용을 바탕으로 생성된 메시지의 responseDTO 리턴
    */
-  public MessageResponse sendMessage(final MessageRequest request) {
+  private MessageResponse getMessageResponse(final MessageRequest request) {
     User user = userRepository.findById(request.getUserId()).orElseThrow(IllegalArgumentException::new);
     return new MessageResponse(user.getId(),user.getName(), request.getContent()); //보낼 메세지 객체를 리턴
+  }
+
+  public void sendMessage(String roomId, JSONObject ob) {
+    UUID userId = UUID.fromString(ob.get("userId").toString());
+    String content = ob.get("content").toString();
+
+    MessageRequest request = new MessageRequest(userId, content);
+    MessageResponse response = getMessageResponse(request);
+
+    messagingTemplate.convertAndSend("/sub/video/chat/"+ roomId , response);
   }
 
   /**
