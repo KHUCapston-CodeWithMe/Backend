@@ -18,12 +18,12 @@ public class ChatDTO {
   @ToString
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class DummyResponse {
+  public static class UserAndRoomResponse {
 
     private List<UserResponse> users;
     private List<RoomResponse> rooms;
 
-    public static DummyResponse of(final List<User> users, final List<Room> rooms) {
+    public static UserAndRoomResponse of(final List<User> users, final List<Room> rooms) {
       List<UserResponse> userResponses = users.stream()
           .map(UserResponse::from)
           .collect(Collectors.toList());
@@ -31,7 +31,7 @@ public class ChatDTO {
           .map(RoomResponse::from)
           .collect(Collectors.toList());
 
-      return new DummyResponse(userResponses, roomResponses);
+      return new UserAndRoomResponse(userResponses, roomResponses);
     }
   }
 

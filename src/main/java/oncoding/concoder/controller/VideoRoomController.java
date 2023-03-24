@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import oncoding.concoder.dto.ChatDTO.DummyResponse;
+import oncoding.concoder.dto.ChatDTO.UserAndRoomResponse;
 import oncoding.concoder.dto.ChatDTO.ExitResponse;
 import oncoding.concoder.dto.ChatDTO.SessionRequest;
 import oncoding.concoder.dto.ChatDTO.SessionResponse;
@@ -20,7 +20,6 @@ import org.springframework.messaging.simp.SimpAttributesContextHolder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -176,9 +175,9 @@ public class VideoRoomController {
 
 
   @PostMapping("/video")
-  public ResponseEntity<DummyResponse> createRoomAndUser(@RequestBody JSONObject ob) {
+  public ResponseEntity<UserAndRoomResponse> createRoomAndUser(@RequestBody JSONObject ob) {
     String username = (String) ob.get("username");
-    DummyResponse response = chattingService.createRoomAndUser(username);
+    UserAndRoomResponse response = chattingService.createRoomAndUser(username);
     return ResponseEntity.ok(response);
   }
 
@@ -193,20 +192,6 @@ public class VideoRoomController {
   public void clearRoomAndUser() {
     chattingService.clear();
   }
-
-  @GetMapping("/dummy")
-  public ResponseEntity<DummyResponse> getDummyRoomAndUser() {
-    DummyResponse response = chattingService.getDummy();
-    return ResponseEntity.ok(response);
-  }
-
-
-  @PostMapping("/dummy")
-  public ResponseEntity<DummyResponse> createDummyRoomAndUser() {
-    DummyResponse response = chattingService.createDummy();
-    return ResponseEntity.ok(response);
-  }
-
 
 
 }

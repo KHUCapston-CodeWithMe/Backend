@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import oncoding.concoder.dto.ChatDTO.DummyResponse;
+import oncoding.concoder.dto.ChatDTO.UserAndRoomResponse;
 import oncoding.concoder.dto.ChatDTO.ExitResponse;
 import oncoding.concoder.dto.ChatDTO.MessageRequest;
 import oncoding.concoder.dto.ChatDTO.MessageResponse;
@@ -121,7 +121,7 @@ public class ChattingService {
 
 
 
-  public DummyResponse createRoomAndUser(String username){
+  public UserAndRoomResponse createRoomAndUser(String username){
 
     List<User> users = new ArrayList<>();
     List<Room> rooms = new ArrayList<>();
@@ -129,35 +129,9 @@ public class ChattingService {
     users.add(userRepository.save(new User(username)));
     rooms.add(roomRepository.save(new Room(2)));
 
-    return DummyResponse.of(users, rooms);
+    return UserAndRoomResponse.of(users, rooms);
   }
 
-
-  public DummyResponse createDummy() {
-    List<User> users = new ArrayList<>();
-    List<Room> rooms = new ArrayList<>();
-
-    users.add(userRepository.save(new User("와일더")));
-    users.add(userRepository.save(new User("마이클")));
-    users.add(userRepository.save(new User("제이슨")));
-    users.add(userRepository.save(new User("오스카")));
-
-    rooms.add(roomRepository.save(new Room(2)));
-    rooms.add(roomRepository.save(new Room(4)));
-    rooms.add(roomRepository.save(new Room(5)));
-
-    return DummyResponse.of(users, rooms);
-  }
-
-  public DummyResponse getDummy() {
-    List<User> users = new ArrayList<>();
-    List<Room> rooms = new ArrayList<>();
-
-    users = userRepository.findAll();
-    rooms=roomRepository.findAll();
-
-    return DummyResponse.of(users, rooms);
-  }
 
   public void clear() {
     sessionRepository.deleteAll();
