@@ -43,7 +43,12 @@ public class ChatDTO {
     public static class ExitResponse {
 
       private UUID roomId;
-      private SessionResponse sessionResponse;
+      private UUID userId;
+      private String name;
+
+      public static ExitResponse from(UUID roomUUID, UUID userUUID, String userName) {
+        return new ExitResponse(roomUUID, userUUID, userName);
+      }
     }
 
     @Setter
@@ -99,47 +104,14 @@ public class ChatDTO {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class SessionRequest {
-
-      private UUID userId;
-      private String sessionId;
-    }
-
-
-    @Setter
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class SessionResponse {
-
-      private List<UserResponse> userResponses;
-
-      public static SessionResponse from(final List<User> users) {
-        return new SessionResponse(users.stream()
-            .map(UserResponse::from)
-            .collect(Collectors.toList()));
-      }
-    }
-
-
-    @Setter
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class UserResponse {
 
       private UUID id;
       private String name;
-      private String sessionId;
 
       public static UserResponse from(final User user) {
-        String userSessionId;
-        if(user.getSession()!=null){
-          userSessionId = user.getSession().getSessionId();
-        }else{
-          userSessionId = "Empty";
-        }
-        return new UserResponse(user.getId(), user.getName(), userSessionId);
+
+        return new UserResponse(user.getId(), user.getName());
       }
     }
 

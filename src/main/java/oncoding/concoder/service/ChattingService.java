@@ -3,20 +3,18 @@ package oncoding.concoder.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import oncoding.concoder.dto.ChatDTO.UserAndRoomResponse;
 import oncoding.concoder.dto.ChatDTO.ExitResponse;
 import oncoding.concoder.dto.ChatDTO.MessageRequest;
 import oncoding.concoder.dto.ChatDTO.MessageResponse;
-import oncoding.concoder.dto.ChatDTO.SessionRequest;
-import oncoding.concoder.dto.ChatDTO.SessionResponse;
 import oncoding.concoder.dto.ChatDTO.UserResponse;
 import oncoding.concoder.model.Room;
-import oncoding.concoder.model.Session;
 import oncoding.concoder.model.User;
 import oncoding.concoder.repository.RoomRepository;
-import oncoding.concoder.repository.SessionRepository;
 import oncoding.concoder.repository.UserRepository;
 import org.json.simple.JSONObject;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -32,7 +30,6 @@ public class ChattingService {
 
   private final UserRepository userRepository;
   private final RoomRepository roomRepository;
-  private final SessionRepository sessionRepository;
 
   private final SimpMessagingTemplate messagingTemplate;
 
@@ -58,59 +55,56 @@ public class ChattingService {
 
   /**
    * 
-   * @param roomId
-   * @param request
-   * @return sessionResponse - 결론적으로 roomId에 해당되는 users임
+   * @param roomId 입장하려는 room의 Id
+   * @param userId 입장하려는 user의 Id
+   * @return 입장 후 방에 있는 모든 User들의 정보 반환
    */
+  public List<UserResponse> enter(final String roomId, final String userId) {
+    UUID roomUUID = UUID.fromString(roomId);
+    UUID userUUID = UUID.fromString(userId);
 
-  public SessionResponse enter(final UUID roomId, final SessionRequest request) {
-    User user = userRepository.findById(request.getUserId()).orElseThrow(IllegalArgumentException::new);
-    Room room = roomRepository.findById(roomId).orElseThrow(IllegalArgumentException::new);
-    Session session = new Session();
-    session = sessionRepository.save(session);//찐 id
+    User user = userRepository.findById(userUUID).orElseThrow(IllegalArgumentException::new);
+    Room room = roomRepository.findById(roomUUID).orElseThrow(IllegalArgumentException::new);
 
-    log.info("<<<<<enter service>>>>>");
-    log.info("entered user: "+user.toString());
-    log.info("entered room: "+ room.toString());
-    log.info("entered session: "+session.toString());
+    log.debug("<<<<<enter service>>>>>");
+    log.debug("entered user: {}:{}", user.getId(), user.getName());
+    log.debug("entered room: {}", room.getId());
 
-    session.setSessionId(request.getSessionId());
-    session.setUser(user);
-    session.setRoom(room);
-    sessionRepository.save(session);
-
-    user.setSession(session);
+    user.setRoom(room);
     userRepository.save(user);
 
-    room.addSession(session);
+    room.addUser(user);
     roomRepository.save(room);
 
-    log.info("entered session info: ");
-    log.info("entered user: "+session.getUser().getId());
-    log.info("entered room: "+session.getRoom().getId());
-
-
-    return SessionResponse.from(room.users()); //sessionResponse 생성 - room의 users를 가지고 있음
+    return room.getUsers().stream()
+            .map(UserResponse::from)
+            .collect(Collectors.toList());
   }
 
   /**
    *
-   * @param sessionId
-   * @return 해당 sessionId가 있었던, 즉 나가는 방에서 해당 세션 삭제 후의 유저들을 반환
+   * @param roomId 퇴장하려는 room의 Id
+   * @param userId 퇴장하려는 user의 Id
+   * @return 나가는 방에서 나가려는 User 삭제 후의 User들을 반환
    */
-  public ExitResponse exit(final String sessionId) {
-    Session session = sessionRepository.findBySessionId(sessionId).orElseThrow(IllegalArgumentException::new);
-    Room room = session.getRoom();//해당 session을 가지고 있는 room 찾음
+  public ExitResponse exit(final String roomId, final String userId) {
 
-    //log.info("exited user: "+session.getUser().getId());
-    log.info("exited session: "+session.getSessionId());
-    log.info("exited room: "+room.getId());
+    UUID roomUUID = UUID.fromString(roomId);
+    UUID userUUID = UUID.fromString(userId);
 
-    session.delete(); //해당 session을 가지고 있는 user에서 session을 null로 변경, room이 가지고 있는 session 리스트에서 해당 session을 없앰
-    sessionRepository.delete(session); //session자체를 삭제
+    Room room = roomRepository.findById(roomUUID).orElseThrow(IllegalArgumentException::new);
+    String removeUserName = room.removeUser(userUUID);
 
+    userRepository.deleteById(userUUID);
 
-    return new ExitResponse(room.getId(), SessionResponse.from(room.users()));
+    log.debug("User {} exited Room {}", userId, roomId);
+
+    if (room.getUsers().isEmpty()) {
+      roomRepository.deleteById(roomUUID);
+      log.debug("Room {} deleted.", roomId);
+    }
+
+    return ExitResponse.from(roomUUID, userUUID, removeUserName);
   }
 
 
@@ -134,7 +128,6 @@ public class ChattingService {
 
 
   public void clear() {
-    sessionRepository.deleteAll();
     userRepository.deleteAll();
     roomRepository.deleteAll();
   }
