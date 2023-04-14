@@ -18,3 +18,9 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL}
