@@ -1,9 +1,8 @@
 package oncoding.concoder.model;
 
-import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
+
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,27 +15,15 @@ public class User extends JpaBaseEntity {
 
   private String name;
 
-  @OneToOne(mappedBy = "user",fetch = FetchType.LAZY)
-  private Session session;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "room_id")
+  private Room room;
 
   public User(final String name) {
     this.name = name;
   }
 
-  public void exit(final Session session) {
-    if (isLinkedSession(session)) {
-      this.session = null;
-      //session.delete();
-    }
+  public void setRoom(Room room) {
+    this.room = room;
   }
-
-  private boolean isLinkedSession(final Session session) {
-    return Objects.nonNull(this.session) && this.session.equals(session);
-  }
-
-  public void setSession(final Session session) {
-    this.session = session;
-  }
-
-
 }

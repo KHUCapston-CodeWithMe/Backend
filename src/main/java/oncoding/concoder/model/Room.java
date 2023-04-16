@@ -2,7 +2,7 @@ package oncoding.concoder.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -16,31 +16,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room extends JpaBaseEntity{
 
+
   @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
-  private List<Session> sessions;
+  private List<User> users = new ArrayList<>();
 
   private int maxHeadCount;
 
   @Builder
   public Room(final int maxHeadCount) {
     this.maxHeadCount = maxHeadCount;
-    this.sessions = new ArrayList<>();
   }
 
-  public List<User> users() {
-    return sessions.stream()
-        .map(Session::getUser)
-        .collect(Collectors.toList());
+  public void addUser(User user) {
+    users.add(user);
   }
 
-  public void exit(final Session session) {
-    if (sessions.contains(session)) {
-      sessions.remove(session);
-      //session.delete();
+  public String removeUser(UUID userUUID) {
+    for (User user : users) {
+      if (user.getId().equals(userUUID)) {
+        users.remove(user);
+
+        return user.getName();
+      }
     }
-  }
 
-  public void addSession(final Session session) {
-    sessions.add(session);
+    return "";
   }
 }
