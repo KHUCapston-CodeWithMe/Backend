@@ -24,16 +24,19 @@ public class CompileController {
     @MessageMapping("/compile/{roomId}")
     public void compileByTestcases(@DestinationVariable final String roomId, JSONObject obj) {
         String code = (String) obj.get("code");
-        Object _lang = obj.get("lang");
+        String _lang = obj.get("lang").toString();
 
-        // TODO: 프론트와 lang 전달 방식 협의
-        // TODO: lang null 처리
+        // TODO: if 문 말고 다른 방식으로 처리할 순 없을까?
         Language lang;
-        if (_lang == null) {
-            lang = Language.PYTHON;
-        } else {
-            lang = Language.CPP;
-            // TODO: 개선
+        switch (_lang) {
+            case "python":
+                lang = Language.PYTHON;
+                break;
+            case "cpp":
+                lang = Language.CPP;
+                break;
+            default:
+                lang = Language.PYTHON;
         }
 
         // Redis 로부터 roomId 로 가져오기
