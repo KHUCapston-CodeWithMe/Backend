@@ -12,11 +12,13 @@ import oncoding.concoder.dto.ChatDTO.ExitResponse;
 import oncoding.concoder.dto.ChatDTO.MessageRequest;
 import oncoding.concoder.dto.ChatDTO.MessageResponse;
 import oncoding.concoder.dto.ChatDTO.UserResponse;
+import oncoding.concoder.dto.UserDto;
 import oncoding.concoder.model.Room;
 import oncoding.concoder.model.User;
 import oncoding.concoder.repository.RoomRepository;
 import oncoding.concoder.repository.UserRepository;
 import org.json.simple.JSONObject;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +35,17 @@ public class ChattingService {
 
   private final SimpMessagingTemplate messagingTemplate;
 
+  private final UserService userService;
+
   /**
    * 
    * @param request
    * @return request 내용을 바탕으로 생성된 메시지의 responseDTO 리턴
    */
   private MessageResponse getMessageResponse(final MessageRequest request) {
-    User user = userRepository.findById(request.getUserId()).orElseThrow(IllegalArgumentException::new);
-    return new MessageResponse(user.getId(),user.getName(), request.getContent()); //보낼 메세지 객체를 리턴
+    UserDto.UserInfo userInfo = userService.getUserInfoById(request.getUserId());
+
+    return new MessageResponse(userInfo.getUserId(), userInfo.getName(), request.getContent()); //보낼 메세지 객체를 리턴
   }
 
   public void sendMessage(String roomId, JSONObject ob) {
@@ -87,6 +92,7 @@ public class ChattingService {
    * @param userId 퇴장하려는 user의 Id
    * @return 나가는 방에서 나가려는 User 삭제 후의 User들을 반환
    */
+  @CacheEvict(value = "UserInfo", key = "#userId", cacheManager = "redisCacheManager")
   public ExitResponse exit(final String roomId, final String userId) {
 
     UUID roomUUID = UUID.fromString(roomId);
