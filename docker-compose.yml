@@ -12,6 +12,7 @@ services:
     depends_on:
       - mysql
       - redis
+      - openvidu
     deploy:
       resources:
         limits:
@@ -42,6 +43,15 @@ services:
       resources:
         limits:
           memory: 200M
+
+  openvidu:
+    restart: always
+    container_name: concoder-openvidu
+    image: openvidu/openvidu-dev:2.27.0
+    ports:
+      - 4443:4443
+    environment:
+      OPENVIDU_SECRET: ${OPENVIDU_SECRET}
 
 volumes:
   concoder-volume:
